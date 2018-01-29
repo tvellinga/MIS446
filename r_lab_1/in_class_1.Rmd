@@ -1,0 +1,110 @@
+---
+title: "Assignment 1"
+author: "Your Name"
+date: "January 23, 2018"
+output: html_document
+---
+# Course Setup
+```{r setup_chunks, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=6, fig.cap = NULL) 
+options(stringsAsFactors = FALSE)
+library(tidyverse)
+library(fivethirtyeight)
+library(DT)
+library(lubridate)
+congress_age<-fivethirtyeight::congress_age
+DT::datatable(congress_age[1:100, ])
+```
+Directions: Answer the question below and present the answer using the `datatable()` function
+
+Example Question and Answer
+1. Select all rows where the congress member's name is Robert.
+```{r}
+mda<-filter(congress_age, firstname=='Robert')
+datatable(mda)
+```
+
+1. Select all rows where the congress member was older than 80 at the start of the term.
+```{r}
+
+```
+2. Use the `is.na` function to identify congress members that have missing middlenames.
+```{r}
+
+```
+
+3. Select the Senators from Iowa.
+```{r}
+
+```
+
+
+4. Select the Senators from Iowa that are not inbumbents.
+```{r}
+
+```
+
+5. Count the number of congress members from each party that are older than 80 at term start.
+```{r}
+
+```
+
+
+6. Arrange the result from above by the variable n.
+```{r}
+
+```
+
+
+
+7. Using the `dplyr` helper functions, select all the variables that start with the letter 'c'.
+```{r}
+
+```
+
+
+8. Rename the first three variables in the congress data to 'x1', 'x2', 'x3'.
+```{r}
+
+```
+
+
+9. After renaming the first three variables, use this new data (ensure you saved the previous step to an object) to select these three variables with the `num_range` function.
+```{r}
+
+```
+
+
+
+```{r}
+
+
+congress_2 <- mutate(congress_age, 
+       democrat = ifelse(party == 'D', 1, 0)
+       )
+
+congress_grp <- group_by(congress_2, congress)
+
+
+num_dem <- summarise(congress_grp, 
+                     num_democrat = sum(democrat),
+                     total = n(),
+                     prop_democrat = num_democrat / total
+)
+datatable(num_dem)
+```
+
+
+10. Suppose we wanted to calculate the number and proportion of republicans instead of democrats, assuming these are the only two parties, copy the code chunk above and edit it command above to calculate these values. 
+
+```{r}
+
+```
+
+
+11. Aggregate the data by state, party, and incumbent. Per grouping,  calculate counts of observations and average age. The resulting dataset should have 5 columns (state, party, incumbent, count, and average_age)
+```{r}
+
+```
+
+
