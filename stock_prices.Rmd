@@ -1,0 +1,13 @@
+---
+title: "stock_prices"
+author: "Tristan"
+date: "January 28, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+getwd()
+read.csv(file.path("r_lab_1", "all_stocks_2017-01-01_to_2018_01_01.csv"))
+```
+
