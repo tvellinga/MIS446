@@ -1,0 +1,128 @@
+---
+title: "Data Visualization in Practice"
+author: "Tristan"
+output: 
+  html_document: 
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(stringsAsFactors = FALSE)
+library(gapminder)
+library(tidyverse)
+library(DT)
+data(gapminder, envir=.GlobalEnv)
+gapminder$country<-as.character(gapminder$country)
+gapminder$continent<-as.character(gapminder$continent)
+
+
+
+# getwd()
+# file.exists(file.path(getwd(),"r_lab_1", "all_stocks_2017-01-01_to_2018_01_01.csv"))
+# mda<-read.csv(file.path(getwd(),"r_lab_1", "all_stocks_2017-01-01_to_2018-01-01.csv"))
+# 
+# gm<-gapminder::gapminder
+# gapminder<-gapminder::gapminder
+# gapminder$country<-as.character(gapminder$country)
+# gapminder$continent<-as.character(gapminder$continent)
+```
+
+
+# Data
+For this introduction we will use the gapminder package. This data has an observation per country per year.  
+
+```{r}
+
+datatable(gapminder)
+
+
+```
+
+
+Lets look at the relationship between life expectency and gdp per capita
+```{r}
+
+my_plot<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) # nothing to plot yet!
+my_plot
+
+```
+
+
+
+```{r}
+
+
+#' scatterplot
+my_plot_point<-my_plot + geom_point()
+```
+
+
+```{r}
+#' common workflow: gradually build up the plot you want  
+#' re-define the object 'p' as you develop "keeper" commands  
+
+#' convey continent by color: MAP continent variable to aesthetic color
+my_plot_point_color<-my_plot + geom_point(aes(color = continent))
+my_plot_point_color
+```
+
+
+# Small multiples with `facet_wrap` or `facet_grid`
+
+```{r}
+my_plot_color_facet<-my_plot_point_color + facet_wrap(~ continent)
+my_plot_color_facet
+
+
+
+gm_limited<-gapminder %>% 
+  filter(continent %in% c("Europe", "Asia") & year>=1970)  %>% 
+  arrange(continent, year)
+
+ggplot(gm_limited, aes(x =lifeExp , y = gdpPercap))+
+  geom_point(aes(color = continent)) +
+   facet_grid(year~continent)
+
+my_plot_color_facet_yr<-my_plot_point_color + facet_wrap(year~ continent)
+my_plot_color_facet_yr
+```
+
+
+## Review
+We built this plot in layers. But we could also construct it as one statements.
+```{r}
+my_plot<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))
+my_plot_point<-my_plot + geom_point()
+my_plot_color_facet<-my_plot_point_color + geom_point(aes(color = continent)) +
+  facet_wrap(~ continent)
+my_plot_color_facet
+
+
+my_plot<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))+
+  geom_point(aes(color = continent)) +
+   facet_wrap(~ continent)
+
+
+my_plot_point<-my_plot + geom_point()
+my_plot_color_facet<-my_plot_point_color + geom_point(aes(color = continent)) +
+  facet_wrap(~ continent)
+my_plot_color_facet
+```
+
+
+
+# Line Plots
+Lets plot gdp percapita over time. Grouped by country
+```{r}
+
+filter(gm_limited, continent=='Europe') %>% 
+ggplot(aes(year, gdpPercap,colour=country))+geom_line()
+```
+
+Few things here:
+* Plot is messy, should consider ways to clean up
+* Notice the code, the `ggplot()` has no reference to a dataset, this is because we used the ` %>% ` to pipe the data into the ggplot function.
+
+
+# Styling Graphs
