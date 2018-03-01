@@ -1,0 +1,7 @@
+"0","my_plot_americas <- ggplot(filter(gapminder, continent==""Americas"" & year==2002), aes(x = gdpPercap, y = lifeExp))"
+"0","# Could also write this as :"
+"0","# my_plot_americas <- filter(gapminder, continent=""Americas"") %>% "
+"0","#   ggplot(aes(x = gdpPercap, y = lifeExp))"
+"0","my_plot_americas +"
+"0","  geom_point()+"
+"0","  geom_text_repel(aes(label = country))"

@@ -1,0 +1,20 @@
+package_list<-c('tidyverse', 'DT','fivethirtyeight','plotly', 'htmlwidgets', 'gapminder','ggrepel')
+## Select 'n' if asked about installing from source
+install.packages(package_list, dependencies=TRUE)
+
+data(gapminder)
+glimpse(gapminder)
+
+summary(gapminder)
+
+
+listviewer::jsonedit(
+  list(
+    array = c(1,2,3)
+    ,boolean = TRUE
+    ,null = NULL
+    ,number = 123
+    ,object = list( a="b", c="d" )
+    ,string = "Hello World"
+  )
+)

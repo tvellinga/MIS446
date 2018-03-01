@@ -1,0 +1,1 @@
+"0","ggplot(carrier_agg, aes(carrier, arr_mean))+geom_bar(stat='identity')"

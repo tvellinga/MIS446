@@ -1,0 +1,4 @@
+"0","my_plot_single_statement2<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))+"
+"0","  geom_point(aes(colour=continent)) +"
+"0","   geom_smooth(aes(group=continent, color =continent))"
+"0","my_plot_single_statement2"

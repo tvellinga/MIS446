@@ -1,0 +1,129 @@
+library(ggplot2)
+
+# Creating layers
+
+layer(
+  data = mpg, 
+  mapping = aes(x = displ, y = hwy),
+  geom = "point", 
+  stat = "identity", 
+  position = "identity"
+)
+
+layer(
+  data = diamonds,
+  mapping = aes(x = carat),
+  geom = "bar",
+  stat = "bin",
+  position = "stack"
+)
+
+# A lot of typing!  
+
+layer(
+  data = mpg, 
+  mapping = aes(x = displ, y = hwy),
+  geom = "point", 
+  stat = "identity", 
+  position = "identity"
+)
+
+# Every geom has an associated default statistic
+# (and vice versa), and position adjustment.
+
+geom_point(aes(displ, hwy), data = mpg)
+geom_histogram(aes(displ), data = mpg)
+
+# To actually create the plot
+ggplot() + 
+  geom_point(aes(displ, hwy), data = mpg)
+  
+ggplot() + 
+  geom_histogram(aes(displ), data = mpg)
+  
+# Multiple layers
+ggplot() + 
+  geom_point(aes(displ, hwy), data = mpg) + 
+  geom_smooth(aes(displ, hwy), data = mpg)
+
+# Avoid redundancy:
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  geom_smooth()
+
+# Different layers can have different aesthetics
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point(aes(colour = class)) + 
+  geom_smooth()
+
+ggplot(mpg, aes(displ, hwy, colour = class)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point(aes(colour = class)) + 
+  geom_line(aes(group = class), stat = "smooth",    
+    method = "lm", se = F)
+
+# Converting qplot to ggplot -------------------------------------------------
+
+qplot(carat, price, data = diamonds)
+ggplot(diamonds, aes(carat, price)) + 
+  geom_point()
+
+qplot(hwy, cty, data = mpg, geom = "jitter")
+ggplot(mpg, aes(hwy, cty)) + 
+  geom_jitter()
+
+qplot(reorder(class, hwy), hwy, data = mpg,  geom = c("jitter", "boxplot"))
+ggplot(mpg, aes(reorder(class, hwy), hwy)) + 
+  geom_jitter() + 
+  geom_boxplot()
+
+qplot(log10(carat), log10(price), data = diamonds, colour = color) +
+  geom_smooth(method = "lm")
+ggplot(diamonds, aes(log10(carat), log10(price),  colour = color)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+
+# Advanced layering ----------------------------------------------------------
+
+qplot(x, y, data = diamonds)
+diamonds$x[diamonds$x == 0] <- NA
+diamonds$y[diamonds$y == 0] <- NA
+diamonds$y[diamonds$y > 20] <- NA
+
+
+diamonds <- mutate(diamonds,
+  area = x * y,
+  lratio = log10(x / y))
+
+qplot(area, lratio, data = diamonds)
+diamonds$lratio[abs(diamonds$lratio) > 0.02] <- NA
+
+ggplot(diamonds, aes(area, lratio)) + 
+  geom_point()
+
+ggplot(diamonds, aes(area, lratio)) +
+  geom_hline(yintercept = 0, size = 2, colour = "white") +
+  geom_point() + 
+  geom_smooth(method = lm, se = F, size = 2)
+
+ggplot(diamonds, aes(area, abs(lratio))) +
+  geom_hline(yintercept = 0, size = 2, colour = "white") +
+  geom_point() + 
+  geom_smooth(se = F, size = 2)
+
+ggplot(diamonds, aes(area, abs(lratio))) +
+  geom_hline(yintercept = 0, size = 2, colour = "white") +
+  geom_boxplot(aes(group = round_any(area, 5))) + 
+  geom_smooth(se = F, size = 2)
+
+ggplot(diamonds, aes(area, abs(lratio))) +
+  geom_hline(yintercept = 0, size = 2, colour = "white") +
+  geom_boxplot(aes(group = round_any(area, 5)))
+
+ggplot(diamonds, aes(area, lratio)) +
+  geom_hline(yintercept = 0, size = 2, colour = "white") +
+  geom_boxplot(aes(group = interaction(sign(lratio), 
+   round_any(area, 5))), position = "identity")

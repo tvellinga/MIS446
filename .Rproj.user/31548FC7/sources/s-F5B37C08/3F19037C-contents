@@ -1,0 +1,519 @@
+---
+title: "Visual Exploration and Handling of Biological Data in R"
+author: "Bernd Klaus"
+date: "December 2, 2016"
+output: 
+  slidy_presentation:
+    df_print: tibble
+    highlight: kate
+    font_adjustment: +1
+    fig_width: 6
+    fig_height: 3.71
+    css: data_handling.css
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+library("tidyverse")
+library("stringr")
+
+options(digits = 3, width = 80)
+opts_chunk$set(echo = TRUE, tidy = FALSE, include = TRUE,
+               dev = 'png', fig.width = 6, fig.asp = 0.618, 
+               comment = '  ', dpi = 300,
+cache = TRUE)
+```
+
+
+## Graphics in R
+
+* Base R graphics: simple, procedural, canvas-oriented
+
+* High-level approach: in the _grammar of graphics_, **ggplot2** 
+
+* graphics are built up from modular logical pieces
+
+*  we can easily try different visualization types for our data in an easy way
+
+
+## Base R graphics example
+
+
+* The most basic function is `plot`, `qplot` is similar
+
+* The data plotted  is from an (ELISA) assay
+
+* assay was used to quantify the activity of the enzyme deoxyribonuclease (DNase)
+
+* The data are in the R object `DNase`, which conveniently comes with base R.
+
+```{r basicplotting1, fig.show='hide'}
+head(DNase)
+```
+
+
+----
+
+
+```{r basicplotting2, fig.show='hide'}
+plot(DNase$conc, DNase$density)
+```
+
+
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/basicplotting1-1.png" height="75%" width="75%">
+
+
+## ggplot2 plotting
+
+* base R plotting functions are great for quick interactive exploration
+
+* ...it is limited, ggplot2 enables step by step construction of high quality
+graphics 
+
+
+
+## A more complex data set {#complex }
+
+<img src="../Yusukecells-2.jpg" width="35%" height="35%" />
+
+* Gene expression microarray dataset from 100 individual cells from mouse embryos at different time points
+
+* The Image shows a  single--section immunofluorescence image of the E3.5 mouse blastocyst
+
+* stained for Serpinh1, a marker of primitive endoderm (blue), Gata6 (red) and Nanog (green)
+
+
+## We take a look at the sample annotation for the  data
+
+Let's have a look at what information is available about the samples
+
+```{r xpData}
+library("Hiiragi2013")
+data("x")
+sample_n(pData(x), 5)
+```
+
+* __pData__ means phenotypic data 
+
+## Summarizing the info about the experimental groups
+
+* with  **group\_by** and summarize functions from  **dplyr**,
+we get a data frame __groups__ that contains
+summary information for each group: the number of cells and the preferred color.
+
+
+```{r groupSize}
+groups <- group_by(pData(x), sampleGroup) %>%
+  dplyr::summarize(n = n() , color = unique(sampleColour))
+groups
+```
+
+* FGF4 is an important regulator of cell differentiation
+
+* Starting from E3.5 the WT cells differentiate into different cell lineages
+
+* pluripotent epiblast (EPI) and primitive endoderm (PE)
+
+## Plotting the DNase data with ggplot2
+
+* __ggplot2__ implements the concept of the grammar of graphics
+
+* extensive docs: <http://docs.ggplot2.org>
+
+```{r figredobasicplottingwithggplot, fig.show='hide'}
+ggplot(DNase, aes(x = conc, y = density)) + geom_point()
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/figredobasicplottingwithggplot-1.png" height="50%" width="50%">
+
+
+## Disecting the ggplot2 command
+
+
+```{r figredobasicplottingwithggplot_2, eval = FALSE, fig.show='hide'}
+ggplot(DNase, aes(x = conc, y = density)) + geom_point()
+```
+
+* ggplot2 works by mapping __data to aesthetics__ (things you can visually perceive)
+
+* ... and then adding __layers__ to the plot that govern certain aspects
+
+* no canvas model, you build the plot layer by layer
+
+## A bar plot ...
+
+*  ... of the number of samples for each of the  groups  for microarray data
+
+```{r figqplot2, fig.show='hide'}
+groupColor <- setNames(groups$color, groups$sampleGroup)
+
+ggplot(groups, aes(x = sampleGroup, y = n, fill = sampleGroup)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = groupColor, name = "Groups") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/figqplot2-1.png" height="50%" width="50%">
+
+
+## The grammar of graphics
+
+The components of __ggplot2__'s grammar of graphics are
+
+1. one or more datasets.
+
+2. one or more geometric objects that serve as the visual representations of the data
+  -- for instance, points, lines, rectangles, contours
+
+3. descriptions of how the variables in the data are mapped to visual properties
+  (aesthetics) of the geometric objects
+
+4. one or more coordinate systems
+
+5. statistical summarization rules
+
+6. a facet specification, i.e. the use of multiple similar subplots to look at 
+  subsets of the same data
+
+7. optional parameters that affect the layout and rendering, such text size, font and
+  alignment, legend positions, and the like
+  
+
+## A scatterplot of gene expression data
+
+```{r figscp2layers1, fig.show='hide'}
+dftx <- as_tibble(t(exprs(x))) %>% cbind(pData(x))
+#dftx$sampleGroup <- factor(dftx$sampleGroup, levels = unique(dftx$sampleGroup))
+
+ggplot( dftx, aes( x = `1426642_at`, y = `1418765_at` ))  +
+  geom_point( aes(color = sampleGroup), shape = 19 ) +
+  geom_smooth( method = "loess" ) +
+  scale_color_manual(values = groupColor ) +
+  xlab("Fn1") +
+  ylab("Timd2") +
+  coord_equal()
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/figscp2layers1-1.png" height="50%" width="50%">
+
+* Timd2 is consistently high in the early time points
+
+* its expression goes down in the EPI samples at days 3.5 and 4.5
+
+* In the FGF4-KO, this decrease is delayed  
+
+* Conversely, the gene Fn1 goes up at days 3.5 and 4.5
+
+## Visualization of 1D data
+
+* we'll use a set of four genes: Fgf4, Gata4, Gata6 and Sox2 
+
+* we use the function __gather__ from the __tidyr__ package
+
+```{r genes2ps1}
+selectedProbes <- c( Fgf4 = "1420085_at", Gata4 = "1418863_at",
+                   Gata6 = "1425463_at",  Sox2 = "1416967_at")
+
+genes <- rownames_to_column(as.data.frame(exprs(x)[selectedProbes, ]), 
+                            var = "probe")
+genes <- gather(genes, 
+               key = sample, 
+               value = value, -probe)
+
+genes$gene <- names(selectedProbes)[ match(genes$probe, selectedProbes) ]
+head(genes)
+```
+
+
+## A Barplot --- don't do it like this!
+
+
+```{r onedbp2, fig.show='hide'}
+ggplot(genes, aes( x = gene, y = value, fill = gene)) +
+  stat_summary(fun.y = mean, geom = "bar") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar",
+               width = 0.25)
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/onedbp2-1.png" height="50%" width="50%">
+
+* common but bad for highly skewed distributions or datasets with outliers
+
+## Boxplots
+
+
+```{r onedboxpl, fig.show='hide'}
+p <- ggplot(genes, aes( x = gene, y = value, fill = gene))
+p + geom_boxplot()
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/onedboxpl-1.png" height="50%" width="50%">
+
+* this takes a similar amount of space, but is much more
+informative
+
+* two of the genes (Gata4, Gata6) have relatively concentrated distributions
+
+* for Fgf4 the distribution is right-skewed
+
+## Dot plots and beeswarm plots
+
+* show the data points directly if not too many 
+
+* overplotting avoided by clever arrangement
+
+```{r oneddot, fig.show='hide'}
+p + geom_dotplot(binaxis = "y", binwidth = 1/6,
+       stackdir = "center", stackratio = 0.75,
+       aes(color = gene))
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/oneddot-1.png" height="50%" width="50%">
+
+
+## Density plots
+
+Yet another way to represent the same data is by density plots
+
+```{r oneddens, fig.show='hide'}
+ggplot(genes, aes( x = value, color = gene)) + geom_density()
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/oneddens-1.png" height="50%" width="50%">
+
+Density estimation has a number of complications:
+
+* smoothing windows size is difficult
+
+* hides sample size
+
+## ECDF plots
+
+* cumulative distribution function (CDF) :
+$$
+F(x) = P(X\le x),
+$$
+
+
+* empirical cumulative distribution function (ECDF) :
+
+$$
+F_{n}(x) = \frac{1}{n}\sum_{i=1}^n \mathbf{1}_{x_i\le x}.
+$$
+
+```{r onedecdf, fig.width = 3.75, fig.height = 3.75}
+ggplot(genes, aes( x = value, color = gene)) + stat_ecdf()
+```
+
+---
+
+The ECDF has several nice properties:
+
+  * It is lossless --- the ECDF \(F_{n}(x)\) contains all the information contained in the original sample  \(x_1,\ldots,x_n\) 
+   
+ * As \(n\) grows, the ECDF \(F_{n}(x)\) converges to the true CDF \(F(x)\).
+
+## Visualization of 2D data: scatterplots
+
+*  useful for visualizing treatment--response comparisons, associations between variables etc.
+
+* we look at differential expression between a wildtype and an FGF4-KO sample
+
+```{r twodsp1, fig.show='hide'}
+dfx <- as.data.frame(exprs(x))
+scp <- ggplot(dfx, aes(x = `59 E4.5 (PE)` ,
+                      y = `92 E4.5 (FGF4-KO)`))
+scp + geom_point(alpha = 0.1)
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/twodsp1-1.png" height="50%" width="50%">
+
+
+* The slight transparency alleviates overplotting
+* ... but does not eliminate it
+
+## Best alternative: hexagonal binning
+
+```{r twodsp6, fig.show='hide'}
+library("RColorBrewer")
+colorscale <- scale_fill_gradientn(
+    colors = rev(brewer.pal(9, "YlGnBu")),
+    values = c(0, exp(seq(-5, 0, length.out = 100))))
+
+scp + geom_hex(binwidth = c(0.2, 0.2)) + colorscale +
+      coord_fixed()
+```
+ <img src="slides_graphics_and_data_handling_files/figure-slidy/twodsp6-1.png" height="50%" width="50%">
+
+
+## Data handling in R: dplyr verbs
+
+* The package  __dplyr__ provides a "grammar" of data manipulation.
+
+* it includes "verbs" that provide basic functionality
+
+__The command structure for all  verbs is__ :
+
+  + first argument is a data frame
+  + return value is a data frame
+  + nothing is modified in place
+
+## dplyr verbs: example data frame
+
+```{r create_dplyr_df}
+df <- tibble(
+      color = c("blue", "black", "blue", "blue", "black"),
+      value = 1:5)
+
+df
+```
+
+## filter examples
+
+```{r filter_ex}
+filter(df, color == "blue")
+filter(df, value %in% c(1,4))
+```
+
+
+## select and arrange examples
+
+```{r, arrange_ex}
+arrange(df, color)
+dplyr::select(df, color)
+dplyr::select(df, -color)
+
+```
+
+## Mutate example
+
+
+```{r, mutate_ex}
+mutate(df, double = 2 * value, quadruple = 4 * value)
+```
+
+
+## split--apply--combine
+
+* Often, data analysis happens in a "split--apply--combine" fashion
+* break up a bigger problem into manageable pieces, operate on each piece independently 
+* then put all the pieces back together
+
+
+## split--apply--combine on the toy data
+
+* we use __dplyr__ to illustrate the concept on the toy data
+
+```{r split_apply_toy}
+# split / group
+by_color <- group_by(df, color)
+
+# apply and combine
+summarize(by_color, total = sum(value))
+
+```
+
+## the chaining / piping operator
+
+* x  %>%  f(y)  is simply f(x, y)
+* rewrite multiple operations so you can read them
+* from **top--to--bottom** and  **left--to--right**
+
+```{r chainingSimpleExample_1}
+x1 <- 1:5; x2 <- 2:6
+sqrt(sum((x1 - x2)^2))
+```
+
+
+
+
+* with  the piping operator
+
+```{r chainingSimpleExample_2}
+(x1 - x2)^2 %>%
+sum() %>%
+sqrt()
+```
+
+
+## split--apply--combine with the Iris data
+
+* measurements from various iris plants
+
+```{r split_apply_iris}
+sample_n(iris, 10)
+```
+
+## split--apply combine code for the iris data 
+
+```{r}
+iris %>% 
+  group_by(Species) %>%
+  summarize( mean_sl = mean(Sepal.Length) )
+```
+
+
+## The concept of tidy data
+
+* a  dataset is a collection of values
+
+*  Every value belongs to a variable and an observation.
+
+* A variable contains all values that measure the same underlying attribute across units
+
+* An observation  contains all values measured on the same unit (like a person, or a day,  across attributes.
+
+
+
+**Tidy data = each observation corresponds to an single line in the data set**
+
+## Long and wide data 
+
+*  tidy data =  "long" data tables
+
+* moving between long and wider data with __tidyr__:
+
+
+* __gather()__ takes multiple columns, and gathers them 
+into key--value pairs: it  makes  "wide" data longer.
+
+* __spread()__ takes two columns (key & value) and
+spreads into multiple columns, it makes "long" data wider.
+
+
+## A simple example
+
+* Let's illustrate these concepts using a simple "messy" and "wide" data set
+
+```{r import_preg}
+preg <- read_csv("https://raw.githubusercontent.com/tidyverse/tidyr/master/vignettes/preg.csv")
+preg
+```
+
+---
+
+
+A tidy version of the pregnancy data looks like this:
+
+
+```{r, tidy_preg, message = FALSE}
+preg2 <- preg %>% 
+  gather(treatment, n, treatmenta:treatmentb) %>%
+  mutate(treatment = str_replace(treatment, "treatment", "")) %>%
+  arrange(name, treatment)
+preg2
+```
+
+
+---
+
+* The variables are now:
+
+1. `name`, with three possible values (John, Mary, and Jane).
+
+2. `treatment`, with two possible values (a and b).
+
+3. `n`, with five or six values depending on how you think of the missing 
+   value (`r sort(preg2$n, na.last = TRUE)`)
+
+* The variables `name` and `treatment` represent "__keys__", while `n` represents
+the __values__
+
+## making preg2 wide again
+
+```{r spread_example}
+spread(preg2, key = treatment, value = n)
+```
+

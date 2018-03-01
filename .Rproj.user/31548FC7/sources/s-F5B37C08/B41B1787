@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517279457654.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "B41B1787",
+    "lastKnownWriteTime" : 1517353354,
+    "last_content_update" : 1517451512632,
+    "path" : "~/GitHub/MIS446/ggplot_intro.Rmd",
+    "project_path" : "ggplot_intro.Rmd",
+    "properties" : {
+        "cursorPosition" : "69,53",
+        "last_setup_crc32" : "",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

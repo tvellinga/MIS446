@@ -1,0 +1,197 @@
+---
+title: "R Stats"
+output:
+  slidy_presentation:
+    highlight: haddock
+    df_print: paged
+    fig_width: 6
+    fig_height: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	fig.align = 'center'
+)
+options(stringsAsFactors = FALSE)
+library(tidyverse)
+library(DT)
+library(plotly)
+library(htmlwidgets)
+library(gapminder)
+library(ggrepel)
+library(ggthemes)
+library(fivethirtyeight)
+data(gapminder, envir=.GlobalEnv)
+```
+
+# Review
+
+# Data Manipulation with dplyr
+* `filter()` to select specific rows
+* `select()` to select specific columns
+* `arrange()` to order the rows of your data
+* `mutate` to create new columns
+* `group_by()` and `summarise()` to aggregate your data
+* `%>%` pipe operator to chain together commands and prevent repeated typing of dataset name
+
+```{r}
+# Lets average lifeExpectancy, poulation and and gdp percapita by continent and year
+gapminder %>% 
+  filter( (year==1957 | year==2007)) %>%
+  group_by(continent, year) %>%
+  summarize(lifeExp_mean=mean(lifeExp),
+            pop_mean=mean(pop),
+            gdpPerCap=(mean(gdpPercap)))
+
+
+```
+
+# Data Manipulation with dplyr
+* `filter()` to select specific rows
+* `select()` to select specific columns
+* `arrange()` to order the rows of your data
+* `mutate` to create new columns
+* `group_by()` and `summarise()` to aggregate your data
+* `%>%` pipe operator to chain together commands and prevent repeated typing of dataset name
+
+
+```{r}
+
+
+# Lets look at the average age of congress over time, grouped by congress, chamber, party, and termstart.
+congress_age %>% 
+  filter( (party=='D' | party=='R')) %>%
+  group_by(congress,chamber, party, termstart ) %>%
+  summarize(count=n(),
+            count_alt=length(age),
+            average_age=mean(age),
+            sd_age=sd(age)) %>% 
+  arrange(chamber,congress, party) %>% 
+  datatable
+```
+
+# Plotting with `ggplot(data, aes(x, y))+geom_*()`
+
+```{r}
+# Using the dataset above, create a plot for each combination of party and chamber 
+average_congress_age<-congress_age %>% 
+  filter( (party=='D' | party=='R')) %>%
+  group_by(congress,chamber, party, termstart ) %>%
+  summarize(count=n(),
+            count_alt=length(age),
+            average_age=mean(age),
+            sd_age=sd(age)) %>% 
+  arrange(chamber,congress, party)
+
+
+ggplot(average_congress_age, aes(termstart, average_age))+
+  geom_line(aes(color=party))+
+  ylim(30, 90)+ ## Lets set the limits of the y axis so small changes dont look so dramatic
+  theme_bw()+
+  facet_grid(chamber~party)
+  
+```
+
+
+# Mathmatical functions
+* `min()`, `max()`, `range()`, `mode()`, `median()`
+* `mean()`: Average
+* `var()` variance
+* `cov`: covariance
+* `sd()` standard deviation
+* `cor()` correlation
+
+```{r}
+datatable(bad_drivers)
+summary(bad_drivers)
+```
+
+```{r}
+
+# Which states have the lowest percentage of drivers involved in fatal collisions who were alcohol-impaired
+bad_drivers %>% 
+  filter(perc_alcohol==min(perc_alcohol))
+
+# Same thing for percent speeders
+bad_drivers %>% 
+  filter(perc_speeding==min(perc_speeding)) %>% 
+  select(state)
+
+# What is the average for the perc_not_distracted variable? Remember to access the column of the dataframe using $
+mean(bad_drivers$perc_not_distracted)
+
+# Lets assign the column perc_speeding to its own object so we dont have to keep typing 'bad_driver$perc_speeding'
+speeders<-bad_drivers$perc_speeding
+summary(speeders)
+mean(speeders)
+var(speeders)
+sd(speeders)
+
+
+# what about the correlation between variables?
+cor(bad_drivers$perc_alcohol, bad_drivers$insurance_premiums)
+
+
+bad_drivers %>% 
+  select_if(is.numeric) %>% 
+  cor()
+ 
+
+```
+
+
+# Getting Data Into R
+```{r  dpi=100, echo=FALSE}
+knitr::include_graphics('images/import_screenshot.png') 
+```
+
+
+# Getting Data Into R
+```{r  dpi=100, echo=FALSE}
+knitr::include_graphics('images/import_screenshot_2.png') 
+```
+
+
+# Getting Data Into R
+```{r  dpi=100, echo=FALSE}
+knitr::include_graphics('images/readr_point_and_click.png') 
+```
+
+
+
+# The Manual Way
+* Some packages have data
+* Reading in files
+* This typically requires a few things:
+    + Contructing the path to you file with `file.path`
+    + Selecting the right function depending on your data source
+* Types of Data Sources
+    + .csv (comma delimited)
+    + .tsv (tab delimited)
+    + .txt (like csv, but columns can be delimited by things like | or ;)
+    + .xlsx or .xls (Excel): read.xlsx
+
+
+# Contructing file paths with `read.csv()`
+```{r}
+getwd() ## Use this to tell you your working directory
+list.files(getwd())
+path.expand("~")
+csv_path<-file.path("C:","Users", "tv", "Documents", "GitHub", "MIS446", "stocks_2017_csv.csv")
+file.exists(csv_path)
+
+```
+
+
+# Reading csv files with `read.csv()`
+```{r}
+
+```
+
+
+
+
+# Basic Stats in R

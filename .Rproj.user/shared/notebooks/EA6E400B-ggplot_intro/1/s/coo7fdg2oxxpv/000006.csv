@@ -1,0 +1,3 @@
+"0","busy_lines<-filter(gm_limited, continent=='Europe') %>% "
+"0","ggplot(aes(year, gdpPercap))+geom_line(aes(colour=country))"
+"0","busy_lines"

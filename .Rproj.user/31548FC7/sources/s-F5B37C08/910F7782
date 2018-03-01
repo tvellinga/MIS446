@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517524025047.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "910F7782",
+    "lastKnownWriteTime" : 29555177500377203,
+    "last_content_update" : 1517524025047,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "CAA99F27",
+        "caption" : "daily_agg",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=daily_agg&cache_key=CAA99F27",
+        "displayedObservations" : "12",
+        "environment" : "",
+        "object" : "daily_agg",
+        "preview" : "0",
+        "totalObservations" : "12",
+        "variables" : "6"
+    },
+    "relative_order" : 16,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

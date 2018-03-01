@@ -1,0 +1,406 @@
+---
+title: "Data Visualization in Practice"
+author: "Tristan"
+output:
+  slidy_presentation:
+    highlight: haddock
+    df_print: paged
+    fig_width: 6
+    fig_height: 4
+---
+
+```{r setup, include=FALSE}
+
+  # output:
+  # revealjs::revealjs_presentation:
+  #   theme: sky
+  #   highlight: pygments
+  #   center: true
+  #   transition: none
+  #   fig_width: 4
+  #   fig_height: 3
+
+
+  # slidy_presentation:
+  #   highlight: haddock
+  #   df_print: paged
+  #   fig_width: 6
+  #   fig_height: 4
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	fig.align = 'center'
+)
+options(stringsAsFactors = FALSE)
+library(tidyverse)
+library(DT)
+library(plotly)
+library(htmlwidgets)
+library(gapminder)
+library(ggrepel)
+library(ggthemes)
+data(gapminder, envir=.GlobalEnv)
+# gapminder$country<-as.character(gapminder$country)
+# gapminder$continent<-as.character(gapminder$continent)
+gapminder<-filter(gapminder, continent!='Oceania')
+
+
+# getwd()
+# file.exists(file.path(getwd(),"r_lab_1", "all_stocks_2017-01-01_to_2018_01_01.csv"))
+# mda<-read.csv(file.path(getwd(),"r_lab_1", "all_stocks_2017-01-01_to_2018-01-01.csv"))
+# 
+# gm<-gapminder::gapminder
+# gapminder<-gapminder::gapminder
+# gapminder$country<-as.character(gapminder$country)
+# gapminder$continent<-as.character(gapminder$continent)
+# require(plotly)
+# require(packageName, quietly=TRUE)==TRUE
+# if(!suppressPackageStartupMessages(require(widyr))){ print("package does not exist")
+#   install.packages()
+#   } else {print("Package does exist")}
+# 
+# require(tidytext)
+```
+
+# Setup  
+
+* Packages are like apps on your smartphone.
+* You have to install the package using `install.packages('packageName')` then open it using `library(packageName)` 
+* You can see if a package is installed in a few ways
+    + Package pane
+    + `installed.packages()`
+* Install the following packages on your machine
+```{r, eval=FALSE}
+package_list<-c('tidyverse', 'DT','fivethirtyeight','plotly', 'htmlwidgets', 'gapminder','ggrepel', 'ggthemse')
+## Select 'n' if asked about installing from source
+install.packages(package_list, dependencies=TRUE)
+
+library(tidyverse)
+library(DT)
+library(plotly)
+library(htmlwidgets)
+library(gapminder)
+library(ggrepel)
+library(ggthemes)
+
+```
+
+
+
+# Data
+For this introduction we will use the gapminder package. This data has an observation per country per year.  
+
+```{r raw_data}
+data(gapminder)
+
+glimpse(gapminder)
+
+summary(gapminder)
+
+datatable(gapminder)
+```
+
+
+----  
+
+# Base Plot
+- Lets look at the relationship between life expectency and gdp per capita
+- This creates the plot, but we have not added any `geom_*` so it is blank
+```{r base_plot}
+
+my_plot<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) # nothing to plot yet!
+my_plot
+
+```
+
+
+# Add an aestehtic
+- Lets add geom_point
+
+```{r add_points}
+my_plot_point <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
+   geom_point()
+
+my_plot_point
+```
+
+# Add a second aestehtic
+
+```{r}
+my_plot <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))
+
+my_plot_point_color <- my_plot + geom_point(aes(color = continent))
+
+my_plot_color_smooth <- my_plot_point_color +geom_smooth()
+my_plot_color_smooth
+```
+
+
+# To Chain Or Not To Chain
+- Build in layers 
+
+```{r code_grouping }
+my_plot <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))
+
+my_plot_point_color <- my_plot + geom_point(aes(color = continent))
+
+my_plot_color_smooth <- my_plot_point_color +geom_smooth()
+my_plot_color_smooth
+```
+
+
+- But we could also construct it as one statements.
+```{r single_statement}
+
+my_plot_single_statement<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))+
+  geom_point(aes(color =continent)) +
+   geom_smooth()
+my_plot_single_statement
+
+```
+
+# Using `aes()`
+- If you put colour or group argument in the intial `ggplot` call, they will be passed to all subsequent aesthetics
+```{r}
+my_plot_single_statement1<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, group=continent, color =continent))+
+  geom_point() +
+   geom_smooth(se=FALSE)
+my_plot_single_statement1
+
+my_plot_single_statement2<-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp))+
+  geom_point(aes(colour=continent)) +
+   geom_smooth(aes(group=continent, color =continent), se=FALSE)
+my_plot_single_statement2
+```
+
+
+
+# `geom_point`: Point Color
+- map continent variable to aesthetic color
+```{r add_color}
+
+my_plot_point_color <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
+   geom_point(aes(color = continent))
+
+my_plot_point_color
+
+
+```
+
+# `geom_point`: Point Size
+- Map point size to the `pop` variable
+```{r}
+my_plot_07 <- ggplot(filter(gapminder, year==2007), aes(x = gdpPercap, y = lifeExp))+ 
+  geom_point(aes(color = continent, size=pop))
+
+my_plot_07
+
+
+```
+
+# `geom_point`: Point Labels
+
+```{r repl}
+
+my_plot_americas <- ggplot(filter(gapminder, continent=="Americas" & year==2002), aes(x = gdpPercap, y = lifeExp))
+
+# Could also write this as :
+# my_plot_americas <- filter(gapminder, continent="Americas") %>% 
+#   ggplot(aes(x = gdpPercap, y = lifeExp))
+
+my_plot_americas +
+  geom_point()+
+  geom_text_repel(aes(label = country))
+
+
+```
+
+
+
+
+
+# Trellis Plots: Single Variable 
+- Used with any plot, but demonstrated her with `geom_point`
+- With `facet_wrap` or `facet_grid`
+- By a single variable
+
+```{r facet, fig.width=8, fig.height=7}
+gm_limited<-gapminder %>% 
+  filter(continent %in% c("Europe", "Americas") & year>=1970)  %>% 
+  arrange(continent, year)
+
+my_plot_07+facet_wrap(~continent)
+
+# my_plot <- ggplot(gm_limited, aes(x = gdpPercap, y = lifeExp))
+# 
+# my_plot_point_color <- my_plot + geom_point(aes(color = continent))
+# # my_plot_point_color
+# my_plot_color_facet <- my_plot_point_color + facet_grid(~ continent)
+# 
+# my_plot_color_facet
+
+gapminder %>% 
+  filter(continent %in% c("Europe", "Americas") & year==2007) %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp))+
+  geom_point(aes(color = continent))+
+  geom_text_repel(aes(label = country))+
+  facet_grid(~ continent)
+
+```
+
+
+# Trellis Plots: Multiple Variables 
+- With `facet_grid`
+
+```{r facet_x_2}
+my_plot <- ggplot(gm_limited, aes(x = gdpPercap, y = lifeExp))
+
+my_plot_point_color <- my_plot + geom_point(aes(color = continent))
+
+my_plot_color_facet <- my_plot_point_color + facet_grid(year ~ continent)
+
+my_plot_color_facet
+
+```
+
+
+
+
+# `geom_hist`
+```{r}
+base_histogram <- ggplot(gapminder, aes(gdpPercap))
+base_histogram+geom_histogram()
+
+## Setting the bins argument tells R how many bins to group the data into
+base_histogram+geom_histogram(aes(fill=continent),bins=50)
+base_histogram+geom_freqpoly(aes(colour=continent),bins=75)
+base_histogram+geom_histogram(bins=100)
+base_histogram+geom_histogram(aes(fill=continent),bins=100)
+base_histogram+geom_histogram(aes(fill=continent),bins=100)+facet_wrap(~continent)
+## Setting the binwidth argument tells R how the width of the bins to group the data into
+base_histogram+geom_histogram(binwidth=100)
+```
+
+
+
+# `geom_line`
+- Lets plot gdp percapita over time for European countries. Grouped by country
+```{r line_messy, fig.width=8, fig.height=6}
+
+busy_lines<-filter(gm_limited, continent=='Europe') %>% 
+ggplot(aes(year, gdpPercap))+geom_line(aes(colour=country))
+busy_lines
+```
+
+
+Few things here:  
+- Plot is messy, should consider ways to clean up  
+- Notice the code, the `ggplot()` has no reference to a dataset, this is because we used the ` %>% ` to pipe the data into the ggplot function.
+
+
+# `geom_line`
+- We can cleanup the previous plot by creating many small plots
+```{r line_facet, fig.width=9, fig.height=6}
+
+filter(gm_limited, continent=='Europe') %>% 
+ggplot(aes(year, gdpPercap,colour=country))+geom_line()+facet_wrap(~country)
+```
+
+# `geom_line`
+- Controlling `linetype`, `size`, and `colour`
+
+```{r}
+line_eg<-filter(gm_limited, continent=='Europe' & country %in% c('France', 'Spain', 'Germany')) %>% 
+  ggplot(aes(year, gdpPercap))+
+  geom_line(aes(linetype=country,colour=country))
+
+line_eg
+
+filter(gm_limited, continent=='Europe' & country %in% c('France', 'Spain', 'Germany')) %>% 
+  ggplot(aes(year, gdpPercap))+
+  geom_line(aes(size=lifeExp,colour=country))
+
+```
+
+#`geom_bar`
+-` Bar plot with `coord_flip` to enable readability
+
+```{r}
+gm_agg<-gapminder %>% 
+  group_by(country, continent) %>% 
+  filter(continent %in% c('Europe', 'Americas')) %>% 
+  summarize(pop_mean=mean(pop), gdpPercap_mean=mean(gdpPercap))
+
+ggplot(gm_agg, aes(country, pop_mean))+geom_bar(stat='identity')
+ggplot(gm_agg, aes(country, pop_mean))+geom_bar(stat='identity')+coord_flip()
+
+```
+
+
+#`geom_bar`
+- Using fill and position arguments
+```{r}
+
+base_plot<-filter(gapminder, year %in% c(2007, 2002) & country %in% c('France', 'Spain', 'Germany')) %>% 
+  ggplot(aes(year, pop))
+
+base_plot+geom_bar(aes(group=country,fill=country),stat='identity', position = 'dodge')
+
+base_plot+geom_bar(aes(group=country,fill=country),stat='identity', position = 'stack')
+```
+
+
+
+# Styling Graphs-Labels
+```{r}
+plot_labs <- my_plot_point_color+
+  labs(x="GDP Per Capita",
+       y="Life Expectancy", 
+       title="Graph Title", 
+       colour="Continent", 
+       subtitle="More details in the subtitle",
+       caption="And a caption!!")
+plot_labs
+
+```
+
+
+# Styling Graphs-Themes
+```{r styles}
+
+# install.packages('ggthemes')
+library(ggthemes)
+plot_labs+theme_bw()
+
+plot_labs+theme_economist()
+
+plot_labs+theme_economist_white()
+
+plot_labs+theme_fivethirtyeight()
+
+plot_labs+theme_tufte()
+
+plot_labs+theme_wsj()
+
+plot_labs+theme_gdocs()
+
+plot_labs+theme_hc()
+
+# plot_labs+theme_stata()
+
+# plot_labs+theme_calc()
+
+```
+
+# Interactivity
+- Interactive plots using plotly library
+
+```{r}
+ggplotly(my_plot_point_color, tooltip = 'all')
+
+
+ggplotly(line_eg, tooltip='all')
+
+```
+

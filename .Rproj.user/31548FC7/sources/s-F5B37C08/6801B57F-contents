@@ -1,0 +1,134 @@
+---
+title: "Untitled"
+author: "Tristan"
+date: "February 1, 2018"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+
+```
+
+
+
+1. This homework will require the following packages `c('nycflights13','tidyverse','DT'`. See if these packages are installed using the package table in bottom right of R Studio. Install if not already, then attach the packages using `library()` command. `nycflights13`  contains a dataset called `flights`. Run the `summary()` and `head()` command on this dataset.
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+library(DT)
+head(flights)
+
+```
+
+
+2. Lets clean this data a bit.
+
+* This dataset has some missing observations in the dep_delay and arr_delay. Filter them out using `filter()` and negating (`!`) `is.na()`. Assign this to a object called flights_clean. Do not use datatable to present this, it is too large. 
+* Filter where carrier is one of `c('AA', 'F9','B6', 'DL', 'US', 'EV', 'UA', 'WN')` using the `%in%` command. For your information, these correspond to America, Frontier, Jet Blue, Delta, US, ExpressJet, United, Southwest 
+```{r}
+flights_clean<-filter(flights, !is.na(arr_delay) & !is.na(dep_delay) & carrier %in% c('AA', 'F9','B6', 'DL', 'US', 'EV', 'UA', 'WN') )
+
+```
+
+
+3. Say we want to investigate which airlines have, on average, the greatest delay. Using the flights_clean data you created int the previous question, group by carrier. Then, using the`summarise()` command to calculate 
+
+* the average (`mean()`) and standard deviation (`sd()`) of arrival delay (`arr_delay`) and departure delay (`dep_delay`)
+* count of rows per group using n()
+
+Assign this (`<-`) to a object called carrier_agg. Show the data with `datatable()`
+For the mean and standard deviation calls, you will need to include the argument `na.rm=TRUE` to remove missing values. See the help pages if you have trouble with this. 
+
+```{r}
+carrier_agg<-flights_clean %>% 
+  group_by(carrier) %>% 
+  summarise(arr_mean=mean(arr_delay),
+            dep_mean=mean(dep_delay),
+            arr_sd=sd(arr_delay),
+            dep_sd=sd(dep_delay),
+            count=n())
+            
+```
+
+ 
+
+```{r}
+
+```
+
+
+4. Using the carrier_agg data you just created, create a barplot with using average arrival delay (rember to set stat='identity' in `geom_bar`)
+```{r}
+ggplot(carrier_agg, aes(carrier, arr_mean))+geom_bar(stat='identity')
+
+```
+
+
+5. Do the same thing as Question 3, but instead of grouping by character, group by flight origin and destination (`origin` and `dest`). Assign this (using `<-`) to a object called carrier_orig_dest_agg. 
+
+
+```{r}
+
+
+carrier_orig_dest_agg<-flights_clean %>% 
+  
+  group_by(carrier, origin, dest) %>% 
+  summarise(arr_mean=mean(arr_delay),
+            dep_mean=mean(dep_delay),
+            arr_sd=sd(arr_delay),
+            dep_sd=sd(dep_delay),
+            count=n())
+datatable(carrier_orig_dest_agg)
+```
+
+* Display the result with `datatable()`
+```{r}
+
+```
+
+* Create a scatterplot (`geom_point`) with average departure and average arrival with color mapped to origin.
+```{r}
+
+ggplot(carrier_orig_dest_agg, aes(arr_mean, dep_mean))+geom_point(aes(colour=origin))
+
+```
+
+* Build on this by addding a smoothed line (`geom_smooth()`) that also maps colour to origin
+```{r}
+ggplot(carrier_orig_dest_agg, aes(arr_mean, dep_mean))+geom_point(aes(colour=origin))+geom_smooth(aes(colour=origin))
+```
+
+* Finally, create a plot for each carrier using `facet_grid()`
+```{r}
+ggplot(carrier_orig_dest_agg, aes(arr_mean, dep_mean))+geom_point(aes(colour=origin))+geom_smooth(aes(colour=origin))+facet_wrap(~origin)
+```
+
+
+
+6. What are the worst days to fly? Aggregate the flights data by month and carrier and calculate  the average (`mean()`) and standard deviation (`sd()`) of arrival delay (`arr_delay`) and departure delay (`dep_delay`), assign this (`<-`) to a object called monthly_agg. 
+```{r}
+monthly_agg<-flights_clean %>% 
+  group_by(month, carrier) %>% 
+  summarise(arr_mean=mean(arr_delay),
+            dep_mean=mean(dep_delay),
+            arr_sd=sd(arr_delay),
+            dep_sd=sd(dep_delay),
+            count=n()) 
+  
+
+
+```
+
+
+7. Using the monthly_agg dataset you just created to create a line plot with month on the x axis and average delay on the y. Map color to carrier.
+
+
+```{r}
+ggplot(monthly_agg, aes(month, dep_mean, color=carrier))+geom_line()
+```
+
