@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517293623031.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "FEA06575",
+    "lastKnownWriteTime" : 3419473789575321445,
+    "last_content_update" : 1517293623031,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "id" : "85ff8b9b7844441783dfce0207500803",
+        "name" : "my_plot_americas",
+        "title" : "my_plot_americas"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "object_explorer"
+}

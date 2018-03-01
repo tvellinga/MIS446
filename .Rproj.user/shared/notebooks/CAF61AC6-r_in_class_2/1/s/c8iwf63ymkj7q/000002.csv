@@ -1,0 +1,1 @@
+"0","flights_clean<-filter(flights, !is.na(arr_delay) & !is.na(dep_delay) & carrier %in% c('AA', 'F9','B6', 'DL', 'US', 'EV', 'UA', 'WN') )"

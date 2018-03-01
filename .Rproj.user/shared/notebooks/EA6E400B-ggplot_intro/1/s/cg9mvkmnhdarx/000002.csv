@@ -1,0 +1,2 @@
+"0","filter(gm_limited, continent=='Europe') %>% "
+"0","ggplot(aes(year, gdpPercap,colour=country))+geom_line()+facet_wrap(~country)"

@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517523268672.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "733DCEB5",
+    "lastKnownWriteTime" : 3419473789575321445,
+    "last_content_update" : 1517523268672,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "C7EEB8EE",
+        "caption" : "airlines",
+        "contentUrl" : "grid_resource/gridviewer.html?env=package%3Anycflights13&obj=airlines&cache_key=C7EEB8EE",
+        "displayedObservations" : 16,
+        "environment" : "package:nycflights13",
+        "object" : "airlines",
+        "preview" : 0,
+        "totalObservations" : 16,
+        "variables" : 2
+    },
+    "relative_order" : 16,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

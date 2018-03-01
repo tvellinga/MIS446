@@ -1,0 +1,12 @@
+"0","gapminder %>% 
+  select(starts_with('c')) %>% 
+  glimpse
+"
+"1","Observations: 1,704
+"
+"1","Variables: 2
+"
+"1","$ country   <fctr> Afghanistan, Afghanistan, Afghanistan, Afghanistan, Afghanistan, Afghanistan, Afghanist...
+"
+"1","$ continent <fctr> Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Europe, Europe,...
+"

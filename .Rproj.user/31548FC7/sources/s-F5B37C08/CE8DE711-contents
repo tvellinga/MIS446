@@ -1,0 +1,61 @@
+---
+title: "stock_prices"
+author: "Tristan"
+date: "January 28, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(stringsAsFactors = FALSE)
+# getwd()
+# file.exists(file.path(getwd(),"r_lab_1", "all_stocks_2017-01-01_to_2018_01_01.csv"))
+mda<-read.csv(file.path(getwd(),"r_lab_1", "all_stocks_2017-01-01_to_2018-01-01.csv"))
+
+gm<-gapminder::gapminder
+gapminder<-gapminder::gapminder
+gapminder$country<-as.character(gapminder$country)
+gapminder$continent<-as.character(gapminder$continent)
+```
+
+```{r}
+# library(gapminder)
+library(tidyverse)
+gapminder
+
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) # nothing to plot yet!
+
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point()
+
+p <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) # just initializes
+
+#' scatterplot
+p + geom_point()
+```
+
+
+```{r}
+#' common workflow: gradually build up the plot you want  
+#' re-define the object 'p' as you develop "keeper" commands  
+
+#' convey continent by color: MAP continent variable to aesthetic color
+p<-p + geom_point(aes(color = continent))
+p
+```
+
+
+```{r}
+p + geom_point(aes(color = continent),alpha = (1/3), size = 3) +
+  facet_wrap(~ continent)
+```
+
+
+```{r}
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
+  scale_x_log10() + geom_bin2d()
+```
+
+
+
+

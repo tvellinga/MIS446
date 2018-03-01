@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517451263728.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1948661218",
+    "id" : "F939F167",
+    "lastKnownWriteTime" : 1517457620,
+    "last_content_update" : 1517521599879,
+    "path" : "~/GitHub/MIS446/r_lecture_3.Rmd",
+    "project_path" : "r_lecture_3.Rmd",
+    "properties" : {
+        "cursorPosition" : "13,17",
+        "last_setup_crc32" : "F5B37C089d02e8c5",
+        "scrollLine" : "0",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

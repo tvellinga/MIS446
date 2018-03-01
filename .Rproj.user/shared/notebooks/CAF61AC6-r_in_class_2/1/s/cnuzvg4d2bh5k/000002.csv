@@ -1,0 +1,3 @@
+"0","carrier_agg<-flights %>% "
+"0","  group_by(carrier) %>% "
+"0","  summarise(arr=mean(arr_delay, na.rm=TRUE))"

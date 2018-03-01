@@ -1,0 +1,8 @@
+"0","carrier_agg<-flights_clean %>% "
+"0","  group_by(carrier) %>% "
+"0","  summarise(arr_mean=mean(arr_delay),"
+"0","            dep_mean=mean(dep_delay),"
+"0","            arr_sd=sd(arr_delay),"
+"0","            dep_sd=sd(dep_delay),"
+"0","            count=n())"
+"0","            "

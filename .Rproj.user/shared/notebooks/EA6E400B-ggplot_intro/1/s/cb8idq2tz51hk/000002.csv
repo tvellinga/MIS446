@@ -1,0 +1,4 @@
+"0","gm_limited<-gapminder %>% "
+"0","  filter(continent %in% c(""Europe"", ""Americas"") & year>=1970)  %>% "
+"0","  arrange(continent, year)"
+"0","my_plot_07+facet_wrap(~continent)"

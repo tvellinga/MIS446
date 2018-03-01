@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517279463306.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "153D11E2",
+    "lastKnownWriteTime" : 1516918991,
+    "last_content_update" : 1516918991,
+    "path" : "~/GitHub/MIS446/r_lab_1/r_intro.Rmd",
+    "project_path" : "r_lab_1/r_intro.Rmd",
+    "properties" : {
+        "cursorPosition" : "259,18",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
